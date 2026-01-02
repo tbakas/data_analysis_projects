@@ -21,15 +21,15 @@ ENCLOSED BY '"'
 LINES TERMINATED BY '\r\n'
 IGNORE 1 ROWS;
 
-# I created a copy of the data table so I wouldn't have to re-import the data if something went wrong.
+# We'll create a copy of the data table so we won't have to re-import the data if something goes wrong.
 create table dirty_cafe_sales_copy as select * from dirty_cafe_sales;
 select * from dirty_cafe_sales_copy limit 10;
 
-# I checked to see if any transaction ids don't match the general pattern. They all fit.
+# We'll check to see if any transaction ids don't match the general pattern. They all fit.
 select `transaction id` from dirty_cafe_sales_copy
 where `transaction id` not like 'TXN________' limit 20;
 
-# I looked for duplicate transaction ids. There are none.
+# We'll look for duplicate transaction ids. There are none.
 select `transaction id` from dirty_cafe_sales_copy
 group by `transaction id`
 having count(`transaction id`) > 1 
