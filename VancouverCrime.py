@@ -18,8 +18,8 @@ def process_function(year):
     global columns, variables
     data = pandas.DataFrame(columns=variables)
 
-    # Get the data for the year.
-    path = r"C:\Users\tbaka\OneDrive\Documents\data\Vancouver Crime\individual years\crimedata_csv_AllNeighbourhoods_" \
+    # Get the data for the year. I obtained the data from https://vpd.ca/crime-statistics/
+    path = r"crimedata_csv_AllNeighbourhoods_" \
            + year + '.csv'
     year_data = pandas.read_csv(path)
     year_data = year_data[columns]
@@ -41,8 +41,8 @@ def process_function(year):
 
         date = datetime(row.YEAR, row.MONTH, row.DAY)
 
-        # Determines what part of the day the crime occurred at. I chose noon to 5pm for afternoon and 5pm to 10pm
-        # for evening.
+        # Determines what part of the day the crime occurred at. I chose 6am to noon for morning,
+        # noon to 5pm for afternoon, 5pm to 10pm for evening, and the rest for night.
         if 6 <= row.HOUR <= 12:
             time_of_day = 'Morning'
         elif 12 < row.HOUR <= 17:
@@ -72,3 +72,4 @@ if __name__ == '__main__':
     crime_data = pandas.concat(results)
     crime_data = crime_data.reset_index(drop=True)
     crime_data.to_csv(r"C:\Users\tbaka\OneDrive\Documents\data\Vancouver Crime\crimedata.csv")
+
