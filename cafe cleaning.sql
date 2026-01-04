@@ -66,7 +66,7 @@ update dirty_cafe_sales_copy
 set `transaction date` = null
 where `transaction date` not like '____-__-__';
 
-# Now we change change the transaction date column to be of type date.
+# Now we can change the transaction date column to be of type date.
 alter table dirty_cafe_sales_copy
 modify column `transaction date` date;
 
@@ -81,7 +81,7 @@ group by item, `price per unit`
 order by item desc
 limit 20;
 
-# To do this we'll create a temporary table that has all the listed items and their prices.
+# To do this we'll create a temporary table that has all items and their prices.
 create temporary table cafe_menu (
 	`item` text,
     `price` double
@@ -92,10 +92,9 @@ select distinct item, `price per unit` from dirty_cafe_sales_copy
 where item is not null and `price per unit` > 0) as dummy;
 
 # We don't end up with any price conflicts, so our table has all items and their unit prices.
-# And there are no items in the data set with multiple prices that we would have try to fix.
 select * from cafe_menu;
 
-# This is just to make sure the join is done properly.
+# This is to make sure the join is done properly.
 select dirty_cafe_sales_copy.item, `price per unit`, price 
 from dirty_cafe_sales_copy
 join cafe_menu on dirty_cafe_sales_copy.item = cafe_menu.item
@@ -113,8 +112,8 @@ update dirty_cafe_sales_copy
 set `price per unit` = `total spent` / quantity
 where `total spent` <> 0 and quantity <> 0;
 
-# We can determine null items if we know the unit price (provided the price has a unique item associated with it). From our temporary table,
-# we see that the only price with multiple items is 4 (it is the price for both Smoothies and Sandwiches).
+# We can determine null items if we know the unit price and the price has only one item linked to it. From our temporary table,
+# we know that the only price with multiple items is 4 (it is the price for both Smoothies and Sandwiches).
 select dirty_cafe_sales_copy.item, `price per unit`, price 
 from dirty_cafe_sales_copy
 join cafe_menu on `price per unit` = price
@@ -134,7 +133,7 @@ update dirty_cafe_sales_copy
 set quantity = `total spent` / `price per unit`
 where `total spent` <> 0 and `price per unit` <> 0;
 
-# And we can do basically the same thing with total spent.
+# And we can do the same thing with the total spent.
 select distinct `total spent` from dirty_cafe_sales_copy;
 
 update dirty_cafe_sales_copy
@@ -161,7 +160,7 @@ where `total spent` = 0;
 
 # Some data exploration:
 
-# Now we can look at which items were the most poplular. The top 3 most purchased items were Cake, Coffee and Salad.
+# Now we can look at which items were the most popular. The top 3 most purchased items were Cake, Coffee and Salad.
 select item, sum(quantity) as quantities_sold from dirty_cafe_sales_copy
 group by item
 order by quantities_sold desc;
@@ -172,7 +171,7 @@ group by item
 order by revenue desc;
 
 # We may be interested in the most common payment methods. Digital Wallet, Credit Card and Cash all have fairly similar counts with 
-# Digital Wallet slightly ahead the other two.
+# Digital Wallet slightly ahead of the other two.
 select `payment method`, count(`payment method`) as payment_method_count from dirty_cafe_sales_copy
 group by `payment method`
 order by  payment_method_count desc;
@@ -182,7 +181,7 @@ select location, count(location) as location_count from dirty_cafe_sales_copy
 group by location
 order by  location_count desc;
 
-# We can see if any days of the week have significantly more orders than other days. They seem to be relatively uniform with
+# We can see if any days of the week have significantly more orders than others. They seem to be relatively uniform with
 # Saturday, Wednesday and Tuesday having a bit less than the other days.
 with week_day_cte as (
 select dayname(`transaction date`) as week_day from dirty_cafe_sales_copy
