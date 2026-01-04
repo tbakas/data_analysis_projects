@@ -158,6 +158,12 @@ update dirty_cafe_sales_copy
 set `total spent` = null
 where `total spent` = 0;
 
+# We can check if any of the numeric data doesn't fit the formula total spent = quantity * price. But there
+# are no such cases.
+select quantity, `price per unit`, `total spent` from dirty_cafe_sales_copy
+where quantity * `price per unit` <> `total spent`
+limit 10;
+
 # Some data exploration:
 
 # Now we can look at which items were the most popular. The top 3 most purchased items were Cake, Coffee and Salad.
