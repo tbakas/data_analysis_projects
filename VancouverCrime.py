@@ -4,18 +4,17 @@ from datetime import datetime
 from utm import to_latlon
 from multiprocessing import Pool, cpu_count
 
-# The columns of the data sets.
-columns = ['TYPE', 'YEAR', 'MONTH', 'DAY', 'HOUR', 'NEIGHBOURHOOD', 'X', 'Y']
-
-# We'll change the hour column into a time of day variable that indicates whether the crime occurred at morning,
-# afternoon, evening or night. And we'll convert the utm coordinates into latitudes and longitudes for tableau to use.
-variables = ['TYPE', 'YEAR', 'DATE', 'TIMEOFDAY', 'NEIGHBOURHOOD', 'LATITUDE', 'LONGITUDE']
-
 
 # The data source separated their data into a csv for each year. So we'll want to put them all together into one csv.
 # This function will return the dataframe we want for a given year.
 def process_function(year):
-    global columns, variables
+    # The columns of the data sets.
+    columns = ['TYPE', 'YEAR', 'MONTH', 'DAY', 'HOUR', 'NEIGHBOURHOOD', 'X', 'Y']
+    
+    # We'll change the hour column into a time of day variable that indicates whether the crime occurred at morning,
+    # afternoon, evening or night. And we'll convert the utm coordinates into latitudes and longitudes for tableau to use.
+    variables = ['TYPE', 'YEAR', 'DATE', 'TIMEOFDAY', 'NEIGHBOURHOOD', 'LATITUDE', 'LONGITUDE']
+    
     data = pandas.DataFrame(columns=variables)
 
     # Get the data for the year. I obtained the data from https://vpd.ca/crime-statistics/
@@ -72,4 +71,5 @@ if __name__ == '__main__':
     crime_data = pandas.concat(results)
     crime_data = crime_data.reset_index(drop=True)
     crime_data.to_csv(r"C:\Users\tbaka\OneDrive\Documents\data\Vancouver Crime\crimedata.csv")
+
 
