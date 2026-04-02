@@ -1,4 +1,3 @@
-# data_analysis_projects
 This repository holds my code/data sets for some of my data analysis projects.
 
 ## Vancouver Crime Data Project:
