@@ -94,7 +94,7 @@ where item is not null and `price per unit` > 0) as dummy;
 # We don't end up with any price conflicts, so our table has all items and their unit prices.
 select * from cafe_menu;
 
-# This is to make sure the join is done properly.
+# This is to make sure the following join is done properly.
 select dirty_cafe_sales_copy.item, `price per unit`, price 
 from dirty_cafe_sales_copy
 join cafe_menu on dirty_cafe_sales_copy.item = cafe_menu.item
