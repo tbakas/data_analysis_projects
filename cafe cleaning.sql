@@ -112,8 +112,8 @@ update dirty_cafe_sales_copy
 set `price per unit` = `total spent` / quantity
 where `total spent` <> 0 and quantity <> 0;
 
-# We can determine null items if we know the unit price and the price has only one item linked to it. From our temporary table,
-# we know that the only price with multiple items is 4 (it is the price for both Smoothies and Sandwiches).
+# We can determine null items if we know the unit price (provided the price has a unique item associated with it). From our temporary table,
+# we see that the only price with multiple items is 4 (it is the price for both Smoothies and Sandwiches).
 select dirty_cafe_sales_copy.item, `price per unit`, price 
 from dirty_cafe_sales_copy
 join cafe_menu on `price per unit` = price
@@ -133,7 +133,7 @@ update dirty_cafe_sales_copy
 set quantity = `total spent` / `price per unit`
 where `total spent` <> 0 and `price per unit` <> 0;
 
-# And we can do the same thing with the total spent.
+# And we can do basically the same thing with total spent.
 select distinct `total spent` from dirty_cafe_sales_copy;
 
 update dirty_cafe_sales_copy
@@ -144,6 +144,8 @@ where quantity <> 0 and `price per unit` <> 0;
 select item, quantity, `price per unit`, `total spent` from dirty_cafe_sales_copy
 where quantity = 0 or `price per unit` = 0 or `total spent` = 0
 limit 10;
+# Note that if a row had a non-zero total that was only divisble by a single price, we could determine both
+# the price and quantity for that row from the total alone. But all rows in the previous table had a zero total.
 
 # So we'll set them all to be null.
 update dirty_cafe_sales_copy
@@ -166,7 +168,7 @@ limit 10;
 
 # Some data exploration:
 
-# Now we can look at which items were the most popular. The top 3 most purchased items were Cake, Coffee and Salad.
+# Now we can look at which items were the most poplular. The top 3 most purchased items were Cake, Coffee and Salad.
 select item, sum(quantity) as quantities_sold from dirty_cafe_sales_copy
 group by item
 order by quantities_sold desc;
@@ -176,19 +178,17 @@ select item, sum(`total spent`) as revenue from dirty_cafe_sales_copy
 group by item
 order by revenue desc;
 
-# We may be interested in the most common payment methods. Digital Wallet, Credit Card and Cash all have fairly similar counts with 
-# Digital Wallet slightly ahead of the other two.
+# We may be interested in the most common payment methods. Digital Wallet, Credit Card and Cash all have fairly similar counts.
 select `payment method`, count(`payment method`) as payment_method_count from dirty_cafe_sales_copy
 group by `payment method`
 order by  payment_method_count desc;
 
-# For location, takeaway is more common than in-store but not by much.
+# For location, takeaway and in-store have about the same count.
 select location, count(location) as location_count from dirty_cafe_sales_copy
 group by location
 order by  location_count desc;
 
-# We can see if any days of the week have significantly more orders than others. They seem to be relatively uniform with
-# Saturday, Wednesday and Tuesday having a bit less than the other days.
+# We can see if any days of the week have significantly more orders than other days. But they seem to be relatively uniform.
 with week_day_cte as (
 select dayname(`transaction date`) as week_day from dirty_cafe_sales_copy
 )
